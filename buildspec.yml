@@ -14,7 +14,7 @@ phases:
   post_build:
     commands:
       - mkdir output
-      - cp monitoring-app/target/*.jar output/app.jar
+      - cp target/*.jar output/app.jar
       - cd output
       - zip -r app.zip app.jar
 
