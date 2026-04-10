@@ -7,12 +7,14 @@ phases:
 
   build:
     commands:
-      - mvn clean package
+      - cd monitoring-app
+      - chmod +x mvnw
+      - ./mvnw clean package -DskipTests
 
   post_build:
     commands:
       - mkdir output
-      - cp target/*.jar output/app.jar
+      - cp monitoring-app/target/*.jar output/app.jar
       - cd output
       - zip -r app.zip app.jar
 
