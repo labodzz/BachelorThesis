@@ -7,10 +7,17 @@ phases:
 
   build:
     commands:
-      - chmod +x monitoring-app/mvnw
-      - monitoring-app/mvnw clean package -DskipTests
+      - cd monitoring-app
+      - chmod +x mvnw
+      - ./mvnw clean package -DskipTests
+
+  post_build:
+    commands:
+      - mkdir output
+      - cp monitoring-app/target/*.jar output/app.jar
+      - cd output
+      - zip -r app.zip app.jar
 
 artifacts:
   files:
-    - monitoring-app/target/*.jar
-  discard-paths: yes
+    - output/app.zip
