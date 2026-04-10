@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+
+  build:
+    commands:
+      - echo Build started
+      - mvn clean package
+
+  post_build:
+    commands:
+      - echo Zipping artifact
+      - mkdir output
+      - cp target/*.jar output/app.jar
+      - cd output
+      - zip -r app.zip app.jar
+
+artifacts:
+  files:
+    - output/app.zip
