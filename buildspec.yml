@@ -1,23 +1,26 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      java: corretto17
+  pre_build:
+    commands:
+      - echo "Logging in to ECR"
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 581891202819.dkr.ecr.eu-north-1.amazonaws.com
 
   build:
     commands:
-      - cd monitoring-app
-      - chmod +x mvnw
-      - ./mvnw clean package -DskipTests
+      - echo "Building JAR"
+      - mvn clean package
+      - echo "Building Docker image"
+      - docker build -t monitoring-app .
+      - docker tag monitoring-app:latest 581891202819.dkr.ecr.eu-north-1.amazonaws.com/monitoring-app:latest
 
   post_build:
     commands:
-      - mkdir output
-      - cp monitoring-app/target/*.jar output/app.jar
-      - cd output
-      - zip -r app.zip app.jar
+      - echo "Pushing image"
+      - docker push 581891202819.dkr.ecr.eu-north-1.amazonaws.com/monitoring-app:latest
+      - echo "Creating imagedefinitions.json"
+      - printf '[{"name":"monitoring-app","imageUri":"%s"}]' 581891202819.dkr.ecr.eu-north-1.amazonaws.com/monitoring-app:latest > imagedefinitions.json
 
 artifacts:
   files:
-    - output/app.zip
+    - imagedefinitions.json
